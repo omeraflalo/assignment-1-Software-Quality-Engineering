@@ -1,9 +1,11 @@
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import sise.sqe.Product;
 import sise.sqe.ShoppingList;
 import sise.sqe.Supermarket;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.*;
 
 public class ShoppingListTest {
     @Test
@@ -14,7 +16,11 @@ public class ShoppingListTest {
 
     @Test
     public void testAddProduct() {
-
+        ShoppingList shoppingList = new ShoppingList(mock(Supermarket.class));
+        Product p = new Product("a","a",2);
+        shoppingList = spy(shoppingList);
+        shoppingList.addProduct(p);
+        verify(shoppingList).addProduct(p);
     }
 
     @Test
