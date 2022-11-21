@@ -34,6 +34,14 @@ public class ShoppingListTest {
 
     }
 
+    public double getTotalMarketPrice(){
+        double sum = 0;
+        for(Product product: listOfProductsToAdd){
+            sum += product.getQuantity()*supermarket.getPrice(product.productId);
+        }
+        return sum;
+    }
+
     @Test
     public void testAddProduct() {
         shoppingList.changeQuantity(20, "0");
@@ -44,7 +52,7 @@ public class ShoppingListTest {
 
     @Test
     public void testGetMarketPrice() {
-
+        assert shoppingList.getMarketPrice() == getTotalMarketPrice();
     }
 
     @Test
