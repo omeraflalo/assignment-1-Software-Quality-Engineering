@@ -14,6 +14,7 @@ public class ShoppingListTest {
     private static Supermarket supermarket;
     private static ShoppingList shoppingList;
     private static ArrayList<Product> listOfProductsToAdd = new ArrayList<>();
+    private static String result = "";
 
 
     public static void addProductWithMock(Product product, double price) {
@@ -58,33 +59,29 @@ public class ShoppingListTest {
     @Test
     public void testGetDiscount() {
         //totalMarketPrice is 1 * 16 + 2 * 15 ... 16 * 1 = 816
-        System.out.println(shoppingList.getMarketPrice());
-        assert shoppingList.getDiscount(shoppingList.getMarketPrice()) == 0.95;
-        Product p = new Product("a", "a", 1);
-        shoppingList.addProduct(p);
-        when(supermarket.getPrice(p.productId)).thenReturn((double)200);
-        assert shoppingList.getDiscount(shoppingList.getMarketPrice()) == 0.85; // now totalMarketPrice > 1000
-        // check extreme cases
-        Supermarket sm = mock(Supermarket.class);
-        ShoppingList sl = new ShoppingList(supermarket);
-        sl.addProduct(p);
-        when(sm.getPrice(p.productId)).thenReturn((double)0);
-        assert shoppingList.getDiscount(shoppingList.getMarketPrice()) == 1;
-        when(sm.getPrice(p.productId)).thenReturn((double)-15);
+        assert shoppingList.getDiscount(getTotalMarketPrice()) == 0.9;
+        assert shoppingList.getDiscount(200) == 0.85; // now totalMarketPrice > 1000
+        assert shoppingList.getDiscount(0) == 1;
         try {
-            shoppingList.getDiscount(shoppingList.getMarketPrice());
+            shoppingList.getDiscount(-15);
         }
         catch (Exception e){
-            assert e.getMessage().equals("Price cannot be negative");
+            result = e.getMessage();
         }
-        when(sm.getPrice(p.productId)).thenReturn((double)500);
-        assert shoppingList.getDiscount(shoppingList.getMarketPrice()) == 1;
-        when(sm.getPrice(p.productId)).thenReturn((double)501);
-        assert shoppingList.getDiscount(shoppingList.getMarketPrice()) == 0.95;
+        assert result.equals("Price cannot be negative");
+        assert shoppingList.getDiscount(500) == 1;
+        assert shoppingList.getDiscount(501) == 0.95;
     }
 
     @Test
     public void testPriceWithDelivery() {
+        try{
+            shoppingList.priceWithDelivery(-3);
+        }
+        catch (Exception e){
+            result = e.getMessage();
+        }
+        assert result.equals("Miles cannot be negative");
 
     }
 
