@@ -44,14 +44,28 @@ public class ShoppingListTest {
     @Test
     public void testAddProduct() {
         shoppingList.changeQuantity(20, "0");
-        assert listOfProductsToAdd.get(0).getQuantity() == 20; //a creative way to make sure the product added
+        assert listOfProductsToAdd.get(0).getQuantity() == 20; //a creative way to make sure the products added
         shoppingList.changeQuantity(1, "0");
     }
 
 
     @Test
     public void testGetMarketPrice() {
+        String result = "ok";
         assert shoppingList.getMarketPrice() == getTotalMarketPrice() * 0.9;
+        Supermarket sm = mock(Supermarket.class);
+        ShoppingList sl = new ShoppingList(sm);
+        Product p = new Product("a", "a", 1);
+        sl.addProduct(p);
+        when(sm.getPrice(p.productId)).thenReturn((double)-5);
+        try {
+            sl.getMarketPrice();
+        }
+        catch (Exception e){
+            result = e.getMessage();
+        }
+        assert result.equals("Price cannot be negative"); //suppose to be exception because of the function getDiscount(price)
+
     }
 
     @Test
@@ -73,18 +87,38 @@ public class ShoppingListTest {
 
     @Test
     public void testPriceWithDelivery() {
+        String result = "";
         try {
             shoppingList.priceWithDelivery(-3);
         } catch (IllegalArgumentException e) {
-            return;
+            result = e.getMessage();
         }
-        assert false;
+        assert result.equals("Miles cannot be negative");
+        assert shoppingList.priceWithDelivery(5) == shoppingList.getMarketPrice() + supermarket.calcDeliveryFee(5, listOfProductsToAdd.size());
+        assert shoppingList.priceWithDelivery(2) == shoppingList.getMarketPrice() + supermarket.calcDeliveryFee(2, listOfProductsToAdd.size());
+        assert shoppingList.priceWithDelivery(0) == shoppingList.getMarketPrice() + supermarket.calcDeliveryFee(0, listOfProductsToAdd.size());
 
     }
 
     @Test
     public void testChangeQuantity() {
-
+        String result = "";
+        try{
+            shoppingList.changeQuantity(-1, "2");
+        }
+        catch (IllegalArgumentException e){
+            result = e.getMessage();
+        }
+        assert result.equals("Quantity cannot be negative");
+        shoppingList.changeQuantity(5, "2");
+        assert listOfProductsToAdd.get(2).getQuantity() == 5;
+        try {
+            shoppingList.changeQuantity(12, "-1"); // id is not exists, should throw exception
+        }
+        catch (Exception e){
+            return;
+        }
+        assert false: "The product id=-1 doesn't exist in the shopping list"; // didn't throw exception - no handle in the problem that Product doesn't exist
     }
 
 }
