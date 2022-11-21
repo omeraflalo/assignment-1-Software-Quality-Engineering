@@ -51,7 +51,7 @@ public class ShoppingListTest {
 
     @Test
     public void testGetMarketPrice() {
-        String result = "ok";
+        String result = "";
         assert shoppingList.getMarketPrice() == getTotalMarketPrice() * 0.9;
         Supermarket sm = mock(Supermarket.class);
         ShoppingList sl = new ShoppingList(sm);
