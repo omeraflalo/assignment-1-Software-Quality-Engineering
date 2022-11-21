@@ -23,8 +23,17 @@ public class ShoppingListTest {
         verify(shoppingList).addProduct(p);
     }
 
+    public void addProductWithMock(Supermarket supermarket,ShoppingList shoppingList, Product product, double price){
+        shoppingList.addProduct(product);
+        when(supermarket.getPrice(product.productId)).thenReturn(price);
+    }
+
     @Test
     public void testGetMarketPrice() {
+        Supermarket supermarket = mock(Supermarket.class);
+        ShoppingList shoppingList = new ShoppingList(supermarket);
+        Product p = new Product("a","a",2);
+        addProductWithMock(supermarket,shoppingList,p,8);
 
     }
 
