@@ -52,7 +52,7 @@ public class ShoppingListTest {
 
     @Test
     public void testGetMarketPrice() {
-        assert shoppingList.getMarketPrice() == getTotalMarketPrice();
+        assert shoppingList.getMarketPrice() == getTotalMarketPrice()*0.9;
     }
 
     @Test
