@@ -11,36 +11,34 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 
 public class ShoppingListTest {
-    private Supermarket supermarket;
-    private ShoppingList shoppingList;
-    private ArrayList<Product> listOfProductsToAdd;
+    private static Supermarket supermarket;
+    private static ShoppingList shoppingList;
+    private static ArrayList<Product> listOfProductsToAdd = new ArrayList<>();
 
 
-    public void addProductWithMock(Product product, double price) {
+    public static void addProductWithMock(Product product, double price) {
         shoppingList.addProduct(product);
         when(supermarket.getPrice(product.productId)).thenReturn(price);
     }
 
     @BeforeAll
-    public void setUpForTesting() {
+    public static void setUpForTesting() {
         supermarket = mock(Supermarket.class);
         shoppingList = new ShoppingList(supermarket);
         for (int i = 0; i < 16; i++) {
-            listOfProductsToAdd.add(new Product(Integer.toString(i), "p" + Integer.toString(i), (int) (Math.random() * 100) + 1));
+            listOfProductsToAdd.add(new Product(Integer.toString(i), "p" + Integer.toString(i), i+1));
         }
-        for (Product p : listOfProductsToAdd) {
-            addProductWithMock(p, (int)(Math.random()*1000)+1);
+        for (int i = 0; i < 16; i++) {
+            addProductWithMock(listOfProductsToAdd.get(i), listOfProductsToAdd.size()-i);
         }
 
     }
 
     @Test
     public void testAddProduct() {
-        Product p = new Product("a", "a", 2);
-        shoppingList = spy(shoppingList);
-        shoppingList.addProduct(p);
-        verify(shoppingList).addProduct(p);
-        assert shoppingList.getMarketPrice() == supermarket.getPrice(p.getId()); //a creative way to make sure the product added
+        shoppingList.changeQuantity(20, "0");
+        assert listOfProductsToAdd.get(0).getQuantity() == 20; //a creative way to make sure the product added
+        shoppingList.changeQuantity(1, "0");
     }
 
 
@@ -51,7 +49,30 @@ public class ShoppingListTest {
 
     @Test
     public void testGetDiscount() {
-
+        //totalMarketPrice is 1 * 16 + 2 * 15 ... 16 * 1 = 816
+        System.out.println(shoppingList.getMarketPrice());
+        assert shoppingList.getDiscount(shoppingList.getMarketPrice()) == 0.95;
+        Product p = new Product("a", "a", 1);
+        shoppingList.addProduct(p);
+        when(supermarket.getPrice(p.productId)).thenReturn((double)200);
+        assert shoppingList.getDiscount(shoppingList.getMarketPrice()) == 0.85; // now totalMarketPrice > 1000
+        // check extreme cases
+        Supermarket sm = mock(Supermarket.class);
+        ShoppingList sl = new ShoppingList(supermarket);
+        sl.addProduct(p);
+        when(sm.getPrice(p.productId)).thenReturn((double)0);
+        assert shoppingList.getDiscount(shoppingList.getMarketPrice()) == 1;
+        when(sm.getPrice(p.productId)).thenReturn((double)-15);
+        try {
+            shoppingList.getDiscount(shoppingList.getMarketPrice());
+        }
+        catch (Exception e){
+            assert e.getMessage().equals("Price cannot be negative");
+        }
+        when(sm.getPrice(p.productId)).thenReturn((double)500);
+        assert shoppingList.getDiscount(shoppingList.getMarketPrice()) == 1;
+        when(sm.getPrice(p.productId)).thenReturn((double)501);
+        assert shoppingList.getDiscount(shoppingList.getMarketPrice()) == 0.95;
     }
 
     @Test
