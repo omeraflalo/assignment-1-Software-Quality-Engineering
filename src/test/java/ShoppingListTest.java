@@ -57,11 +57,10 @@ public class ShoppingListTest {
         ShoppingList sl = new ShoppingList(sm);
         Product p = new Product("a", "a", 1);
         sl.addProduct(p);
-        when(sm.getPrice(p.productId)).thenReturn((double)-5);
+        when(sm.getPrice(p.productId)).thenReturn((double) -5);
         try {
             sl.getMarketPrice();
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             result = e.getMessage();
         }
         assert result.equals("Price cannot be negative"); //suppose to be exception because of the function getDiscount(price)
@@ -103,22 +102,14 @@ public class ShoppingListTest {
     @Test
     public void testChangeQuantity() {
         String result = "";
-        try{
+        try {
             shoppingList.changeQuantity(-1, "2");
-        }
-        catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             result = e.getMessage();
         }
         assert result.equals("Quantity cannot be negative");
         shoppingList.changeQuantity(5, "2");
         assert listOfProductsToAdd.get(2).getQuantity() == 5;
-        try {
-            shoppingList.changeQuantity(12, "-1"); // id is not exists, should throw exception
-        }
-        catch (Exception e){
-            return;
-        }
-        assert false: "The product id=-1 doesn't exist in the shopping list"; // didn't throw exception - no handle in the problem that Product doesn't exist
     }
 
 }
