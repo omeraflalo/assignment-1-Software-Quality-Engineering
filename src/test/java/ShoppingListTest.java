@@ -14,8 +14,6 @@ public class ShoppingListTest {
     private static Supermarket supermarket;
     private static ShoppingList shoppingList;
     private static ArrayList<Product> listOfProductsToAdd = new ArrayList<>();
-    private static String result = "";
-
 
     public static void addProductWithMock(Product product, double price) {
         shoppingList.addProduct(product);
@@ -27,18 +25,18 @@ public class ShoppingListTest {
         supermarket = mock(Supermarket.class);
         shoppingList = new ShoppingList(supermarket);
         for (int i = 0; i < 16; i++) {
-            listOfProductsToAdd.add(new Product(Integer.toString(i), "p" + Integer.toString(i), i+1));
+            listOfProductsToAdd.add(new Product(Integer.toString(i), "p" + Integer.toString(i), i + 1));
         }
         for (int i = 0; i < 16; i++) {
-            addProductWithMock(listOfProductsToAdd.get(i), listOfProductsToAdd.size()-i);
+            addProductWithMock(listOfProductsToAdd.get(i), listOfProductsToAdd.size() - i);
         }
 
     }
 
-    public double getTotalMarketPrice(){
+    public double getTotalMarketPrice() {
         double sum = 0;
-        for(Product product: listOfProductsToAdd){
-            sum += product.getQuantity()*supermarket.getPrice(product.productId);
+        for (Product product : listOfProductsToAdd) {
+            sum += product.getQuantity() * supermarket.getPrice(product.productId);
         }
         return sum;
     }
@@ -53,19 +51,19 @@ public class ShoppingListTest {
 
     @Test
     public void testGetMarketPrice() {
-        assert shoppingList.getMarketPrice() == getTotalMarketPrice()*0.9;
+        assert shoppingList.getMarketPrice() == getTotalMarketPrice() * 0.9;
     }
 
     @Test
     public void testGetDiscount() {
+        String result = "";
         //totalMarketPrice is 1 * 16 + 2 * 15 ... 16 * 1 = 816
         assert shoppingList.getDiscount(getTotalMarketPrice()) == 0.9;
-        assert shoppingList.getDiscount(200) == 0.85; // now totalMarketPrice > 1000
+        assert shoppingList.getDiscount(1200) == 0.85;
         assert shoppingList.getDiscount(0) == 1;
         try {
             shoppingList.getDiscount(-15);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             result = e.getMessage();
         }
         assert result.equals("Price cannot be negative");
@@ -75,13 +73,12 @@ public class ShoppingListTest {
 
     @Test
     public void testPriceWithDelivery() {
-        try{
+        try {
             shoppingList.priceWithDelivery(-3);
+        } catch (IllegalArgumentException e) {
+            return;
         }
-        catch (Exception e){
-            result = e.getMessage();
-        }
-        assert result.equals("Miles cannot be negative");
+        assert false;
 
     }
 
