@@ -20,7 +20,7 @@ public class ShoppingListTest {
         sm = mock(Supermarket.class);
         shoppingList = new ShoppingList(sm);
         for (int i =0;i<16;i++){
-            listOfProductsToAdd.add(new Product(Integer.toString(i), "p" + Integer.toString(i), i));
+            listOfProductsToAdd.add(new Product(Integer.toString(i), "p" + Integer.toString(i), (int)(Math.random()*100)+1));
         }
 
     }
